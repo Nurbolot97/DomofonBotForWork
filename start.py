@@ -23,7 +23,7 @@ make_choose.add(yes, nop)
 @bot.message_handler(commands=["start"])
 def get_start(message):
     chat_id = message.chat.id
-    bot.send_message(chat_id, "Здравствуйте! Добро пожаловать!")
+    bot.send_message(chat_id, "Добро пожаловать! \U0001F64B")
     bot.send_message(chat_id, "Что вы хотели? Выберите нужное!", reply_markup=make_action)
 
 # Help func
@@ -51,7 +51,7 @@ def get_action(call):
     elif call.data == "not":
         bot.send_message(chat_id, "Тогда возвращаю вас на главное окно...", reply_markup=make_action)
     else:
-        bot.send_message(chat_id, "Для помощи нажмите: /help")
+        bot.send_message(chat_id, "Для помощи нажмите: \U000027A1 /help")
 
 # Get and write password to json
 def get_password(message):
@@ -61,7 +61,7 @@ def get_password(message):
             list_ = list(check_house_pass)
             house_address = message.text.split(":")[0]
             if house_address in list_:
-                bot.send_message(chat_id, "Код для этого дома(подъезда) уже имеется", reply_markup=make_action)
+                bot.send_message(chat_id, "Код для этого дома(подъезда) уже имеется \U0001F60B", reply_markup=make_action)
             else:
                 try:
                     house_pass = message.text.split(":")
@@ -71,8 +71,9 @@ def get_password(message):
                         data.update(house_pass_dict)
                     with open("house_password.json", "w") as file:
                         json.dump(data, file)
+                    bot.send_message(chat_id, "Код записан, спасибо! \U00002705", reply_markup=make_action)
                 except Exception:
-                    bot.send_message(chat_id, "Вы ввели данные некорректно. \n Просим ввезти данные как на примере!", reply_markup=make_action)
+                    bot.send_message(chat_id, "Вы ввели данные некорректно.\U0001F632 \n Просим ввезти данные как на примере!", reply_markup=make_action)
 
 # Give password for users
 def give_password(message):
@@ -84,7 +85,7 @@ def give_password(message):
             result = json.load(file)
         bot.send_message(chat_id, f"{result[message.text]}")
     except (KeyError, ValueError):
-        bot.send_message(chat_id, "Вы возможно ввели адрес неправильно или \n кода от этого дома пока нету в нашей базе!")
+        bot.send_message(chat_id, "Вы возможно ввели адрес неправильно или \n кода от этого дома пока нету в нашей базе! \U0001F61E")
         bot.send_message(chat_id, "Хотите записать код к этому дому?", reply_markup=make_choose)
 
 # For some unrelevant message
