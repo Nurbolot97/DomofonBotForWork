@@ -5,7 +5,6 @@ from telebot import types
 from decouple import config
 
 
-
 bot = telebot.TeleBot(config("TOKEN"), parse_mode=None)
 
 # Board1
@@ -20,21 +19,21 @@ yes = types.InlineKeyboardButton("Yes", callback_data="yes")
 nop = types.InlineKeyboardButton("Not", callback_data="not")
 make_choose.add(yes, nop)
 
-
+# Starting func
 @bot.message_handler(commands=["start"])
 def get_start(message):
     chat_id = message.chat.id
     bot.send_message(chat_id, "Здравствуйте! Добро пожаловать!")
     bot.send_message(chat_id, "Что вы хотели? Выберите нужное!", reply_markup=make_action)
 
-
+# Help func
 @bot.message_handler(commands=["help"])
 def get_help(message):
     chat_id = message.chat.id
     bot.send_message(chat_id, "Помощь в пути!")
     bot.send_photo(chat_id, open("/home/nurbolot/AddressBot/media/canva1.jpg", "rb"))
 
-
+# Callback func
 @bot.callback_query_handler(func=lambda call:True)
 def get_action(call):
     chat_id = call.message.chat.id
@@ -54,7 +53,7 @@ def get_action(call):
     else:
         bot.send_message(chat_id, "Для помощи нажмите: /help")
 
-
+# Get and write password to json
 def get_password(message):
     chat_id = message.chat.id
     with open("house_password.json", "r") as file:
@@ -75,7 +74,7 @@ def get_password(message):
                 except Exception:
                     bot.send_message(chat_id, "Вы ввели данные некорректно. \n Просим ввезти данные как на примере!", reply_markup=make_action)
 
-
+# Give password for users
 def give_password(message):
     chat_id = message.chat.id
     bot.send_message(chat_id, "Идет поиск кода домофона в базе...")
@@ -88,25 +87,16 @@ def give_password(message):
         bot.send_message(chat_id, "Вы возможно ввели адрес неправильно или \n кода от этого дома пока нету в нашей базе!")
         bot.send_message(chat_id, "Хотите записать код к этому дому?", reply_markup=make_choose)
 
-
+# For some unrelevant message
 @bot.message_handler(content_types=["text", "audio", "photo", "document", "video", "voice", "location", "contact", "sticker"])
 def get_any_messages(message):
     chat_id = message.chat.id
     bot.send_message(chat_id, "Начать общение с ботом: /start, помощь: /help")
         
-
-
-class HousePassword():
-    pass
-
-
-
-
-
+# Turn on funcs
 def main():
     bot.polling()
     
-
 
 if __name__ == "__main__":
     main()
