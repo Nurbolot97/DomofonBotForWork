@@ -23,7 +23,8 @@ make_choose.add(yes, nop)
 make_change = types.InlineKeyboardMarkup(row_width=2)
 yes1 = types.InlineKeyboardButton("Конечно", callback_data="yes1")
 not1 = types.InlineKeyboardButton("Нет, воздержусь", callback_data="not1")
-make_change.add(yes1, not1)
+to_know = types.InlineKeyboardButton("Узнать код", callback_data="know")
+make_change.add(yes1, not1, to_know)
 
 # Starting func
 @bot.message_handler(commands=["start"])
@@ -57,13 +58,19 @@ def get_action(call):
     elif call.data == "not":
         bot.send_message(chat_id, "Тогда возвращаю вас на главное окно...", reply_markup=make_action)
     elif call.data == "yes1":
-        pass
-
-
+        msg = bot.send_message(chat_id, "Отлично, далее следуйте инструкциям бота...")
+        bot.register_next_step_handler(msg, make_pass_change)
     elif call.data == "not1":
         bot.send_message(chat_id, "Понятно, направляю вас на главное окно...", reply_markup=make_action)
     else:
         bot.send_message(chat_id, "Для помощи нажмите: \U000027A1 /help")
+
+# To change exist password 
+def make_pass_change(message):
+    chat_id = message.chat.id
+    bot.send_message(chat_id, "Напишите адрес дома(с подъездом).\nНапример: Декабристов21под3")
+    
+    
 
 # Get and write password to json
 def get_password(message):
