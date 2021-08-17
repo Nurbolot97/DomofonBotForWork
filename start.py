@@ -7,19 +7,19 @@ from decouple import config
 
 bot = telebot.TeleBot(config("TOKEN"), parse_mode=None)
 
-# Board1
+# KeyBoard1
 make_action = types.InlineKeyboardMarkup(row_width=2)
 btn1 = types.InlineKeyboardButton("Узнать код по адресу", callback_data="know")
 btn2 = types.InlineKeyboardButton("Добавить новый код", callback_data="write")
 make_action.add(btn1, btn2)
 
-# Board2
+# KeyBoard2
 make_choose = types.InlineKeyboardMarkup(row_width=2)
 yes = types.InlineKeyboardButton("Да  \U00002714", callback_data="yes")
 nop = types.InlineKeyboardButton("Нет  \U0000274E", callback_data="not")
 make_choose.add(yes, nop)
 
-# Board3
+# KeyBoard3
 make_change = types.InlineKeyboardMarkup(row_width=2)
 yes1 = types.InlineKeyboardButton("Конечно", callback_data="yes1")
 not1 = types.InlineKeyboardButton("Нет, воздержусь", callback_data="not1")
@@ -37,7 +37,7 @@ def get_start(message):
 @bot.message_handler(commands=["help"])
 def get_help(message):
     chat_id = message.chat.id
-    bot.send_message(chat_id, "Данный бот предназначен для записи новых и\nвыдачи уже существующих кодов от домофонов.\nСледуйте всем инструкциям бота\nчтобы не вредить на роботоспособность бота. Для старта нажмите: /start")
+    bot.send_message(chat_id, "Данный бот предназначен для записи новых и\nвыдачи уже существующих кодов от домофонов.\nСледуйте всем инструкциям бота \U0001F609 \nчтобы не вредить на роботоспособность бота. Для старта нажмите: /start")
     bot.send_photo(chat_id, open("/home/nurbolot/AddressBot/media/canva1.jpg", "rb"))
 
 # Callback func
@@ -58,7 +58,7 @@ def get_action(call):
     elif call.data == "not":
         bot.send_message(chat_id, "Тогда возвращаю вас на главное окно...", reply_markup=make_action)
     elif call.data == "yes1":
-        msg = bot.send_message(chat_id, "Отлично, далее следуйте инструкциям бота...")
+        msg = bot.send_message(chat_id, "Отлично, тогда напишите адрес дома(с подъездом)\nу которого хотите изменить код и сам новый код.\nНапример: Декабристов21под3:1997")
         bot.register_next_step_handler(msg, make_pass_change)
     elif call.data == "not1":
         bot.send_message(chat_id, "Понятно, направляю вас на главное окно...", reply_markup=make_action)
@@ -68,7 +68,10 @@ def get_action(call):
 # To change exist password 
 def make_pass_change(message):
     chat_id = message.chat.id
-    bot.send_message(chat_id, "Напишите адрес дома(с подъездом).\nНапример: Декабристов21под3")
+    with open("house_password.json", "r") as file:
+        address = json.load(file)
+        change_address = address[f"{message.text}"]
+        
     
     
 
