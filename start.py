@@ -15,9 +15,15 @@ make_action.add(btn1, btn2)
 
 # Board2
 make_choose = types.InlineKeyboardMarkup(row_width=2)
-yes = types.InlineKeyboardButton("Yes", callback_data="yes")
-nop = types.InlineKeyboardButton("Not", callback_data="not")
+yes = types.InlineKeyboardButton("Да  \U00002714", callback_data="yes")
+nop = types.InlineKeyboardButton("Нет  \U0000274E", callback_data="not")
 make_choose.add(yes, nop)
+
+# Board3
+make_change = types.InlineKeyboardMarkup(row_width=2)
+yes1 = types.InlineKeyboardButton("Конечно", callback_data="yes1")
+not1 = types.InlineKeyboardButton("Нет, воздержусь", callback_data="not1")
+make_change.add(yes1, not1)
 
 # Starting func
 @bot.message_handler(commands=["start"])
@@ -30,7 +36,7 @@ def get_start(message):
 @bot.message_handler(commands=["help"])
 def get_help(message):
     chat_id = message.chat.id
-    bot.send_message(chat_id, "Помощь в пути!")
+    bot.send_message(chat_id, "Данный бот предназначен для записи новых и\nвыдачи уже существующих кодов от домофонов.\nСледуйте всем инструкциям бота\nчтобы не вредить на роботоспособность бота. Для старта нажмите: /start")
     bot.send_photo(chat_id, open("/home/nurbolot/AddressBot/media/canva1.jpg", "rb"))
 
 # Callback func
@@ -50,6 +56,12 @@ def get_action(call):
         bot.register_next_step_handler(msg, get_password)
     elif call.data == "not":
         bot.send_message(chat_id, "Тогда возвращаю вас на главное окно...", reply_markup=make_action)
+    elif call.data == "yes1":
+        pass
+
+
+    elif call.data == "not1":
+        bot.send_message(chat_id, "Понятно, направляю вас на главное окно...", reply_markup=make_action)
     else:
         bot.send_message(chat_id, "Для помощи нажмите: \U000027A1 /help")
 
@@ -61,17 +73,20 @@ def get_password(message):
             list_ = list(check_house_pass)
             house_address = message.text.split(":")[0]
             if house_address in list_:
-                bot.send_message(chat_id, "Код для этого дома(подъезда) уже имеется \U0001F60B", reply_markup=make_action)
+                bot.send_message(chat_id, "Код для этого дома(подъезда) уже имеется \U0001F60B.\nХотите изменить код для данного адреса?", reply_markup=make_change)
             else:
                 try:
                     house_pass = message.text.split(":")
-                    house_pass_dict = dict.fromkeys([house_pass[0]], house_pass[1])
-                    with open("house_password.json") as file:
-                        data = json.load(file)
+                    if len(house_pass) == 2:
+                        house_pass_dict = dict.fromkeys([house_pass[0]], house_pass[1])
+                        with open("house_password.json") as file:
+                            data = json.load(file)
                         data.update(house_pass_dict)
-                    with open("house_password.json", "w") as file:
-                        json.dump(data, file)
-                    bot.send_message(chat_id, "Код записан, спасибо! \U00002705", reply_markup=make_action)
+                        with open("house_password.json", "w") as file:
+                            json.dump(data, file)
+                        bot.send_message(chat_id, "Код записан, спасибо! \U00002705", reply_markup=make_action)
+                    else:
+                        bot.send_message(chat_id, "Вы поставили знак - (:) в нескольких местах.\nИсправьте это и повторите заново!", reply_markup=make_action)
                 except Exception:
                     bot.send_message(chat_id, "Вы ввели данные некорректно.\U0001F632 \n Просим ввезти данные как на примере!", reply_markup=make_action)
 
@@ -84,6 +99,7 @@ def give_password(message):
         with open("house_password.json", "r") as file:
             result = json.load(file)
         bot.send_message(chat_id, f"{result[message.text]}")
+        bot.send_message(chat_id, "Хотите продолжить? \U0001F60A", reply_markup=make_action)
     except (KeyError, ValueError):
         bot.send_message(chat_id, "Вы возможно ввели адрес неправильно или \n кода от этого дома пока нету в нашей базе! \U0001F61E")
         bot.send_message(chat_id, "Хотите записать код к этому дому?", reply_markup=make_choose)
