@@ -37,7 +37,7 @@ def get_start(message):
 @bot.message_handler(commands=["help"])
 def get_help(message):
     chat_id = message.chat.id
-    bot.send_message(chat_id, "Данный бот предназначен для записи новых и\nвыдачи уже существующих кодов от домофонов.\nСледуйте всем инструкциям бота \U0001F609 \nчтобы не вредить на роботоспособность бота. Для старта нажмите: /start")
+    bot.send_message(chat_id, "Данный бот предназначен для записи новых и\nвыдачи уже существующих кодов от домофонов.\nСледуйте всем инструкциям бота \U0001F609 \nчтобы не навредить на роботоспособность бота. Для старта нажмите: /start")
     bot.send_photo(chat_id, open("/home/nurbolot/AddressBot/media/canva1.jpg", "rb"))
 
 # Callback func
@@ -68,12 +68,19 @@ def get_action(call):
 # To change exist password 
 def make_pass_change(message):
     chat_id = message.chat.id
-    with open("house_password.json", "r") as file:
-        address = json.load(file)
-        change_address = address[f"{message.text}"]
-        
-    
-    
+    list_ = message.text.split(":")
+    if len(list_) == 2:
+        get_house = message.text.split(":")[0]
+        new_password = message.text.split(":")[1]
+        new_house_pass_dict = dict.fromkeys([get_house], new_password)
+        with open("house_password.json") as file:
+            address = json.load(file)
+        address.update(new_house_pass_dict)
+        with open("house_password.json", "w") as file:
+            json.dump(address, file)
+        bot.send_message(chat_id, "Код для этого дома успешно перезаписано!", reply_markup=make_action)
+    else:
+        bot.send_message(chat_id, "Вы возможно поставили знак - (:) в нескольких местах или ввели данные некорректно.\U0001F632\nПросим ввезти данные как на примере!", reply_markup=make_action) 
 
 # Get and write password to json
 def get_password(message):
@@ -96,8 +103,6 @@ def get_password(message):
         else:
             bot.send_message(chat_id, "Вы возможно поставили знак - (:) в нескольких местах или ввели данные некорректно.\U0001F632\nПросим ввезти данные как на примере!", reply_markup=make_action) 
    
-                    
-
 # Give password for users
 def give_password(message):
     chat_id = message.chat.id
