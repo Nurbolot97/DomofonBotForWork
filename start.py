@@ -78,27 +78,25 @@ def make_pass_change(message):
 # Get and write password to json
 def get_password(message):
     chat_id = message.chat.id
+    house_pass = message.text.split(":")
     with open("house_password.json", "r") as file:
-            check_house_pass = json.load(file)
-            list_ = list(check_house_pass)
-            house_address = message.text.split(":")[0]
-            if house_address in list_:
-                bot.send_message(chat_id, "Код для этого дома(подъезда) уже имеется \U0001F60B.\nХотите изменить код для данного адреса?", reply_markup=make_change)
-            else:
-                try:
-                    house_pass = message.text.split(":")
-                    if len(house_pass) == 2:
-                        house_pass_dict = dict.fromkeys([house_pass[0]], house_pass[1])
-                        with open("house_password.json") as file:
-                            data = json.load(file)
-                        data.update(house_pass_dict)
-                        with open("house_password.json", "w") as file:
-                            json.dump(data, file)
-                        bot.send_message(chat_id, "Код записан, спасибо! \U00002705", reply_markup=make_action)
-                    else:
-                        bot.send_message(chat_id, "Вы поставили знак - (:) в нескольких местах.\nИсправьте это и повторите заново!", reply_markup=make_action)
-                except Exception:
-                    bot.send_message(chat_id, "Вы ввели данные некорректно.\U0001F632 \n Просим ввезти данные как на примере!", reply_markup=make_action)
+        check_house_pass = json.load(file)
+        list_ = list(check_house_pass)
+        house_address = message.text.split(":")[0]
+        if house_address in list_:
+            bot.send_message(chat_id, "Код для этого дома(подъезда) уже имеется \U0001F60B.\nХотите изменить код для данного адреса?", reply_markup=make_change)
+        elif len(house_pass) == 2:
+            house_pass_dict = dict.fromkeys([house_pass[0]], house_pass[1])
+            with open("house_password.json") as file:
+                data = json.load(file)
+            data.update(house_pass_dict)
+            with open("house_password.json", "w") as file:
+                json.dump(data, file)
+            bot.send_message(chat_id, "Код записан, спасибо! \U00002705", reply_markup=make_action)
+        else:
+            bot.send_message(chat_id, "Вы возможно поставили знак - (:) в нескольких местах или ввели данные некорректно.\U0001F632\nПросим ввезти данные как на примере!", reply_markup=make_action) 
+   
+                    
 
 # Give password for users
 def give_password(message):
